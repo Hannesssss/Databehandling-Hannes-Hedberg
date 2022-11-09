@@ -18,6 +18,9 @@ bs4 = "*"
 python-dotenv = "*"
 dash = "*"
 dash-bootstrap-components = "*"
+plotly = "*"
+plotly-express = "*"
+nbformat = "*"
 
 [dev-packages]
 
