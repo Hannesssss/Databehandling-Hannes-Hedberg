@@ -21,6 +21,8 @@ dash-bootstrap-components = "*"
 plotly = "*"
 plotly-express = "*"
 nbformat = "*"
+tk = "*"
+pyqt5 = "*"
 
 [dev-packages]
 
