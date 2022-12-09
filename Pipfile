@@ -23,6 +23,7 @@ plotly-express = "*"
 nbformat = "*"
 tk = "*"
 pyqt5 = "*"
+numexpr = "*"
 
 [dev-packages]
 
