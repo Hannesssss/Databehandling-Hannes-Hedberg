@@ -7,10 +7,7 @@ import plotly.graph_objects as go
 
 app = Dash(__name__)
 
-@app.callback(
-    Output(component_id='my-output', component_property='children'),
-    Input(component_id='my-input', component_property='value')
-)
+
 def update_output_div(input_value):
     return f'Output: {input_value}'
 
@@ -91,10 +88,7 @@ app.layout = html.Div(children=[
    
 ])
 
-@app.callback(
-    Output('dropdown', 'value'),
-    Input('dropdown', 'value'),
-)
+
 
 
 
