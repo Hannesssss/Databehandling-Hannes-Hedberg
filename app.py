@@ -89,9 +89,6 @@ app.layout = html.Div(children=[
 ])
 
 
-
-
-
 @app.callback(
     Output('graph', 'figure'),
     Input('reset', 'n_clicks'),
