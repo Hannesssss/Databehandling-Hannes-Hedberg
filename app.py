@@ -1,22 +1,11 @@
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, dash_table, ctx
 import plotly.express as px
 import pandas as pd
 import seaborn as sns
 import numpy as np
+import plotly.graph_objects as go
 
 app = Dash(__name__)
-
-app.layout = html.Div([
-    html.H6("Change the value in the text box to see callbacks in action!"),
-    html.Div([
-        "Input: ",
-        dcc.Input(id='my-input', value='initial value', type='text')
-    ]),
-    html.Br(),
-    html.Div(id='my-output'),
-
-])
-
 
 @app.callback(
     Output(component_id='my-output', component_property='children'),
@@ -24,8 +13,6 @@ app.layout = html.Div([
 )
 def update_output_div(input_value):
     return f'Output: {input_value}'
-
-# see https://plotly.com/python/px-arguments/ for more options
 
 df_c19_vaccine = pd.read_excel(
     "Folkhalsomyndigheten_Covid19_Vaccine.xlsx",            # read the 2nd excel file, coiv19 vaccine data
@@ -49,7 +36,7 @@ fig2 = px.pie(                               # Using ploty express
     data_frame=df_c19_vaccine,              # grabbing the dataframe
     values='Befolkning',                    # uses population 
     names='Ålder',                          # uses age
-    title='Sveriges åldersfördelning',      # title, displayed top left
+    title='Sveriges åldersfördelning - Stiliserade',      # title, displayed top left
     hole=.1                                 # dount hole
 )
 
@@ -66,15 +53,14 @@ fig2.update_traces(                         # updates the pie chart with new set
 
 app.layout = html.Div(children=[
     html.H1(children='Covid-19 Dashboard'),
-
     html.Div(children='''
         Dashboard over some covid-19 information
     '''),
+    html.Button('Pie Chart - Age Distribution', id='draw'),
+    html.Button('Vaccination Rollout', id='reset'),
+    dcc.Graph(id='graph'),
 
-   # dcc.Dropdown(
-   #     id="c19-dropdown",
-   #     value="",
-   #),
+
 
    dcc.Dropdown(
         id="c19-dropdown",
@@ -87,6 +73,7 @@ app.layout = html.Div(children=[
         value = "Län_namn",
         multi = False,
         clearable=False,
+        searchable=True,
         style={"width": "50%"}
 
 
@@ -102,22 +89,51 @@ app.layout = html.Div(children=[
         figure=fig2
    )
    
-
-#@app.callback(
-#    Output(component_id="bar_chart", component_property="figure"),
-#    [Input(component_id = "c19-dropdown", component_property="value")]
-#)
-
 ])
 
 @app.callback(
     Output('dropdown', 'value'),
     Input('dropdown', 'value'),
 )
+
+
+
+@app.callback(
+    Output('graph', 'figure'),
+    Input('reset', 'n_clicks'),
+    Input('draw', 'n_clicks'),
+    prevent_initial_call=True
+)
+def update_graph(b1, b2):
+    triggered_id = ctx.triggered_id
+    print(triggered_id)
+    if triggered_id == 'reset':
+         return reset_graph()
+    elif triggered_id == 'draw':
+         return draw_graph()
+
+def draw_graph():
+    return px.pie(                               
+    data_frame=df_c19_vaccine,              
+    values='Befolkning',                     
+    names='Ålder',                          
+    title='Sveriges åldersfördelning',      
+    hole=.1                                 
+)
+
+def reset_graph():
+    return px.bar(                                                                                   
+    df_vaccine_rollout,                                                                       
+    title="Vaccination Rollout, 1-3 doses",                                                     
+    labels= {"value": "andel vaccinerade", "Län_namn": "Län", "variable": "Doser"} 
+    
+)
+
 def update_ticker_options(value):
     if 'All' in value:
         value = ['a', 'b', 'c']
     return value
+
 
 
 if __name__ == '__main__':
